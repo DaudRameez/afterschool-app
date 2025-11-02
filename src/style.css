@@ -1,0 +1,94 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f9fafb;
+  color: #333;
+  margin: 0;
+  text-align: center;
+}
+
+header {
+  background: linear-gradient(135deg, #42b883, #2c3e50);
+  padding: 20px;
+  color: white;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.lesson-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 90%;
+  max-width: 1000px;
+  margin: 20px auto 100px;
+}
+
+.lesson-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease;
+}
+
+.lesson-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.icon-box {
+  width: 60px;
+  height: 60px;
+  background: #42b883;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 26px;
+  margin: 0 auto 10px;
+}
+
+h3 {
+  margin: 10px 0;
+  color: #2c3e50;
+}
+
+.details p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+
+footer {
+  background: #2c3e50;
+  color: white;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+} 
+
+.lesson-detail {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  max-width: 600px;
+  margin: 0 auto;
+}
+.back-btn {
+  background: #007bff;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.back-btn:hover {
+  background: #0056b3;
+}
+

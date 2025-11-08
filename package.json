@@ -1,6 +1,5 @@
-
 {
-  "homepage": "https://github.com/DaudRameez/afterschool-app",
+  "homepage": "https://daudrameez.github.io/afterschool-app/",
   "name": "afterschoolapp-frontend",
   "private": true,
   "version": "0.0.0",
@@ -9,10 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-  
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build"
-  
+    "predeploy": "npm run build",
+    "deploy": "npx gh-pages -d dist"
   },
   "dependencies": {
     "vue": "^3.5.22",
@@ -22,7 +19,5 @@
     "@vitejs/plugin-vue": "^5.2.4",
     "gh-pages": "^6.3.0",
     "vite": "^6.3.5"
-  
-  
   }
 }

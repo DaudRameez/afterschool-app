@@ -1,9 +1,7 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue2'
 
-// https://vite.dev/config/
 export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/afterschool-app/' : '/',
   plugins: [vue()],
-  assetsInclude: ['/*.vue'],
 })

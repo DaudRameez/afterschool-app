@@ -1,43 +1,3 @@
-<script setup>
-import { reactive, toRefs, provide } from 'vue'
-import { useRouter } from 'vue-router'
-
-// Router
-const router = useRouter()
-
-// Reactive cart state
-const state = reactive({
-  cart: []
-})
-
-// Functions
-function addToCart(lesson) {
-  if (!state.cart.find(item => item.id === lesson.id)) {
-    state.cart.push({ ...lesson })
-  }
-}
-
-function removeFromCart(lessonId) {
-  const idx = state.cart.findIndex(i => i.id === lessonId)
-  if (idx !== -1) state.cart.splice(idx, 1)
-}
-
-function isInCart(lessonId) {
-  return state.cart.some(i => i.id === lessonId)
-}
-
-function goToCart() {
-  router.push({ name: 'Cart' })
-}
-
-// Provide reactive state and functions
-provide('cartState', state)
-provide('addToCart', addToCart)
-provide('removeFromCart', removeFromCart)
-provide('isInCart', isInCart)
-provide('goToCart', goToCart)
-</script>
-
 <template>
   <div id="app">
     <header>
@@ -51,13 +11,13 @@ provide('goToCart', goToCart)
 
     <!-- Floating cart button -->
     <button
-      v-if="state.cart.length > 0"
+      v-if="cart.length > 0"
       class="fab-cart"
       @click="goToCart"
-      :title="`Open cart (${state.cart.length})`"
+      :title="`Open cart (${cart.length})`"
     >
-      <i class="fa-solid fa-cart-shopping fa-lg"></i>
-      <span class="badge">{{ state.cart.length }}</span>
+      <i class="fa fa-shopping-cart fa-lg"></i>
+      <span class="badge">{{ cart.length }}</span>
     </button>
 
     <footer>
@@ -65,6 +25,42 @@ provide('goToCart', goToCart)
     </footer>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      cart: []
+    }
+  },
+  methods: {
+    addToCart(item) {
+      if (!this.cart.find(i => i.id === item.id)) {
+        this.cart.push({ ...item })
+      }
+    },
+    removeFromCart(id) {
+      const index = this.cart.findIndex(i => i.id === id)
+      if (index !== -1) this.cart.splice(index, 1)
+    },
+    goToCart() {
+      this.$router.push({ name: 'Cart' })
+    },
+    clearCart() {
+      this.cart = []
+    }
+  },
+  provide() {
+    return {
+      cart: this.cart,
+      addToCart: this.addToCart,
+      removeFromCart: this.removeFromCart,
+      clearCart: this.clearCart,
+      goToCart: this.goToCart
+    }
+  }
+}
+</script>
 
 <style scoped>
 header {

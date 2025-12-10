@@ -10,7 +10,7 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  base: process.env.NODE_ENV === 'production' ? '/afterschool-app/' : '/',
+  base: '/afterschool-app/',
   routes: [
     { path: '/', name: 'Home', component: HomePage },
     { path: '/cart', name: 'Cart', component: CartPage },

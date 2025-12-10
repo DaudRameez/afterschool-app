@@ -2,12 +2,32 @@
   <section class="lessons-container">
     <h2>Available Lessons</h2>
 
+    <!-- Sort Controls -->
+    <div class="sort-controls">
+      <label for="sort-attribute">Sort by:</label>
+      <select v-model="sortAttribute" id="sort-attribute">
+        <option value="subject">Subject</option>
+        <option value="location">Location</option>
+        <option value="price">Price</option>
+        <option value="spaces">Spaces</option>
+      </select>
+
+      <label for="sort-order">Order:</label>
+      <select v-model="sortOrder" id="sort-order">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+    </div>
+
+    <!-- Lessons Grid -->
     <div v-if="lessons.length" class="lessons-grid">
-      <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
+      <div v-for="lesson in sortedLessons" :key="lesson.id" class="lesson-card">
         <h3>{{ lesson.title }}</h3>
+        <p><strong>Subject:</strong> {{ lesson.subject }}</p>
         <p><strong>Location:</strong> {{ lesson.location }}</p>
         <p><strong>Price:</strong> AED {{ lesson.price }}</p>
         <p><strong>Spaces left:</strong> {{ lesson.spaces }}</p>
+
         <div class="card-buttons">
           <button @click="openModal(lesson)">View</button>
           <button 
@@ -16,20 +36,19 @@
           >
             {{ lesson.spaces > 0 ? "Add to Cart" : "Full" }}
           </button>
-
         </div>
       </div>
     </div>
 
-    <p v-else>Loading lessons...</p>
+    <p v-else>Loading lessons or failed to fetch...</p>
 
     <!-- Modal -->
     <div v-if="selectedLesson" class="modal-overlay" @click.self="closeModal">
       <div class="modal-card">
         <h3>{{ selectedLesson.title }}</h3>
+        <p><strong>Subject:</strong> {{ selectedLesson.subject || 'N/A' }}</p>
         <p><strong>Location:</strong> {{ selectedLesson.location }}</p>
         <p><strong>Price:</strong> AED {{ selectedLesson.price }}</p>
-        <p><strong>Subject:</strong> {{ selectedLesson.subject || 'N/A' }}</p>
         <p><strong>Spaces left:</strong> {{ selectedLesson.spaces || 'N/A' }}</p>
         <button class="close-btn" @click="closeModal">Close</button>
       </div>
@@ -38,6 +57,7 @@
 </template>
 
 <script>
+// Backend URL handling
 const API_BASE =
   window.location.hostname === "localhost"
     ? "http://localhost:3000"
@@ -47,7 +67,9 @@ export default {
   data() {
     return {
       lessons: [],
-      selectedLesson: null
+      selectedLesson: null,
+      sortAttribute: 'subject',
+      sortOrder: 'asc'
     }
   },
   inject: ['addToCart'],
@@ -59,6 +81,27 @@ export default {
     } catch (err) {
       console.error(err);
       this.lessons = [];
+    }
+  },
+  computed: {
+    sortedLessons() {
+      return [...this.lessons].sort((a, b) => {
+        let attrA = a[this.sortAttribute];
+        let attrB = b[this.sortAttribute];
+
+        // Number comparison for price or spaces
+        if (this.sortAttribute === 'price' || this.sortAttribute === 'spaces') {
+          attrA = Number(attrA);
+          attrB = Number(attrB);
+        } else {
+          attrA = String(attrA).toLowerCase();
+          attrB = String(attrB).toLowerCase();
+        }
+
+        if (attrA < attrB) return this.sortOrder === 'asc' ? -1 : 1;
+        if (attrA > attrB) return this.sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
     }
   },
   methods: {
@@ -76,7 +119,6 @@ export default {
     }
   }
 }
-
 </script>
 
 <style scoped>
@@ -91,6 +133,18 @@ h2 {
   margin-bottom: 20px;
 }
 
+/* Sort Controls */
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.sort-controls label {
+  font-weight: bold;
+}
+
+/* Lessons Grid */
 .lessons-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

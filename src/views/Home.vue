@@ -7,10 +7,18 @@
         <h3>{{ lesson.title }}</h3>
         <p><strong>Location:</strong> {{ lesson.location }}</p>
         <p><strong>Price:</strong> AED {{ lesson.price }}</p>
+        <p><strong>Spaces left:</strong> {{ lesson.spaces }}</p>
+
 
         <div class="card-buttons">
           <button @click="openModal(lesson)">View</button>
-          <button @click="add(lesson)">Add to Cart</button>
+          <button 
+            @click="add(lesson)" 
+            :disabled="lesson.spaces === 0"
+          >
+            {{ lesson.spaces > 0 ? "Add to Cart" : "Full" }}
+          </button>
+
         </div>
       </div>
     </div>
@@ -51,7 +59,10 @@ export default {
   },
   methods: {
     add(lesson) {
-      this.addToCart(lesson)
+      if (lesson.spaces > 0) {
+        lesson.spaces -= 1;        // reduce space
+        this.addToCart(lesson);    // add to cart
+      }
     },
     openModal(lesson) {
       this.selectedLesson = lesson

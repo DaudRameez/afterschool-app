@@ -46,26 +46,26 @@ const API_BASE =
     : "https://afterschool-app-backend.onrender.com";
 
 export default {
-  inject: ['cart', 'clearCart'],
+  inject: ["cart", "clearCart"],
   data() {
     return {
-      name: '',
-      email: '',
-      phone: '',
+      name: "",
+      email: "",
+      phone: "",
       loading: false,
-      error: ''
-    }
+      error: ""
+    };
   },
   computed: {
     totalPrice() {
-      return this.cart.reduce((sum, item) => sum + Number(item.price), 0)
+      return this.cart.reduce((sum, item) => sum + Number(item.price), 0);
     }
   },
   methods: {
     async placeOrder() {
       if (!this.name || !this.email || !this.phone) {
-        this.error = "Please fill in all details"
-        return
+        this.error = "Please fill in all details";
+        return;
       }
 
       const orderData = {
@@ -73,35 +73,39 @@ export default {
         email: this.email,
         phone: this.phone,
         items: this.cart
-      }
+      };
 
       try {
-        this.loading = true
-       
+        this.loading = true;
 
         const res = await fetch(`${API_BASE}/api/orders`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderData)
-        })
+        });
 
-        const data = await res.json()
+        const data = await res.json();
+
         if (res.ok) {
-          this.clearCart()
-          this.$router.push({ name: 'OrderSuccess', params: { orderId: data.orderId } })
+          this.clearCart();
+          this.$router.push({
+            name: "OrderSuccess",
+            params: { orderId: data.orderId }
+          });
         } else {
-          this.error = data.error || 'Failed to place order'
+          this.error = data.error || "Failed to place order";
         }
       } catch (err) {
-        console.error(err)
-        this.error = 'Failed to place order'
+        console.error(err);
+        this.error = "Failed to place order";
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     }
   }
-}
+};
 </script>
+
 
 <style scoped>
 .checkout-page {

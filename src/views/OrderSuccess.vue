@@ -26,7 +26,10 @@ export default {
   async created() {
     try {
       // Fetch the order to display items (optional)
-      const res = await fetch(`http://localhost:3000/api/orders/${this.orderId}`)
+      const API_BASE = location.hostname === "localhost"
+      ? "http://localhost:3000"
+       : "https://afterschool-app-backend.onrender.com";
+      const res = await fetch(`${API_BASE}/api/orders/${this.orderId}`)
       const data = await res.json()
       this.items = data.items || []
     } catch (err) {

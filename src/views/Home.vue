@@ -8,8 +8,6 @@
         <p><strong>Location:</strong> {{ lesson.location }}</p>
         <p><strong>Price:</strong> AED {{ lesson.price }}</p>
         <p><strong>Spaces left:</strong> {{ lesson.spaces }}</p>
-
-
         <div class="card-buttons">
           <button @click="openModal(lesson)">View</button>
           <button 
@@ -40,6 +38,11 @@
 </template>
 
 <script>
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://afterschool-app-backend.onrender.com";
+
 export default {
   data() {
     return {
@@ -49,29 +52,31 @@ export default {
   },
   inject: ['addToCart'],
   async created() {
-    const API_BASE = location.hostname === "localhost"
-      ? "http://localhost:3000"
-       : "https://afterschool-app-backend.onrender.com";
-
-
-    const res = await fetch(`${API_BASE}/api/lessons`)
-    this.lessons = await res.json()
+    try {
+      const res = await fetch(`${API_BASE}/api/lessons`);
+      if (!res.ok) throw new Error("Failed to fetch lessons");
+      this.lessons = await res.json();
+    } catch (err) {
+      console.error(err);
+      this.lessons = [];
+    }
   },
   methods: {
     add(lesson) {
       if (lesson.spaces > 0) {
-        lesson.spaces -= 1;        // reduce space
-        this.addToCart(lesson);    // add to cart
+        lesson.spaces -= 1;
+        this.addToCart(lesson);
       }
     },
     openModal(lesson) {
-      this.selectedLesson = lesson
+      this.selectedLesson = lesson;
     },
     closeModal() {
-      this.selectedLesson = null
+      this.selectedLesson = null;
     }
   }
 }
+
 </script>
 
 <style scoped>

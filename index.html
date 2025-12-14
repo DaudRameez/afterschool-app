@@ -17,8 +17,25 @@
   </header>
 
   <main>
+    <!-- Sort Controls -->
+    <div class="sort-controls">
+      <label for="sort-attribute">Sort by:</label>
+      <select v-model="sortAttribute" id="sort-attribute">
+        <option value="subject">Subject</option>
+        <option value="location">Location</option>
+        <option value="price">Price</option>
+        <option value="spaces">Spaces</option>
+      </select>
+
+      <label for="sort-order">Order:</label>
+      <select v-model="sortOrder" id="sort-order">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+    </div>
+
     <div class="lesson-container">
-      <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
+      <div v-for="lesson in sortedLessons" :key="lesson.id" class="lesson-card">
         <div class="icon-box"><i class="fa fa-book"></i></div>
         <h3>{{ lesson.title }}</h3>
         <div class="details">
@@ -50,7 +67,9 @@ new Vue({
   el:'#app',
   data:{
     lessons: [],
-    cart: JSON.parse(localStorage.getItem('cart')||'[]')
+    cart: JSON.parse(localStorage.getItem('cart')||'[]'),
+    sortAttribute: 'subject',
+    sortOrder: 'asc'
   },
   mounted(){
     const API_BASE = window.location.hostname === "localhost"
@@ -61,6 +80,26 @@ new Vue({
       .then(res=>res.json())
       .then(data=>this.lessons=data)
       .catch(err=>console.error("Failed to fetch lessons:",err));
+  },
+  computed:{
+    sortedLessons(){
+      return [...this.lessons].sort((a,b)=>{
+        let attrA = a[this.sortAttribute];
+        let attrB = b[this.sortAttribute];
+
+        if(this.sortAttribute==='price' || this.sortAttribute==='spaces'){
+          attrA = Number(attrA);
+          attrB = Number(attrB);
+        } else {
+          attrA = String(attrA).toLowerCase();
+          attrB = String(attrB).toLowerCase();
+        }
+
+        if(attrA < attrB) return this.sortOrder==='asc'? -1:1;
+        if(attrA > attrB) return this.sortOrder==='asc'? 1:-1;
+        return 0;
+      });
+    }
   },
   methods:{
     addToCart(lesson){

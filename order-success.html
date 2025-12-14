@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Success</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="successApp">
+    <header>
+      <h1>Order Successful!</h1>
+    </header>
+
+    <main>
+      <p>Thank you for your order.</p>
+      <p><strong>Order Number:</strong> {{ orderId }}</p>
+
+      <h3>Order Details:</h3>
+      <ul>
+        <li v-for="item in items" :key="item.id">{{ item.title }} - AED {{ item.price }}</li>
+      </ul>
+
+      <a href="index.html"><button>Back to Home</button></a>
+    </main>
+
+    <footer>
+      <p>Created by Daud</p>
+    </footer>
+  </div>
+
+  <script>
+  new Vue({
+    el:'#successApp',
+    data:{
+      orderId: new URLSearchParams(window.location.search).get('orderId') || '',
+      items:[]
+    },
+    async mounted(){
+      if(!this.orderId) return;
+      const API_BASE = window.location.hostname === "localhost"
+        ? "http://localhost:3000"
+        : "https://afterschool-app-backend.onrender.com";
+      try{
+        const res = await fetch(`${API_BASE}/api/orders/${this.orderId}`);
+        const data = await res.json();
+        this.items = data.items || [];
+      }catch(e){ console.error(e); }
+    }
+  });
+  </script>
+</body>
+</html>

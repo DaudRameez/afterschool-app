@@ -1,15 +1,80 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lessons App</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-...your-integrity..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+<head>
+  <meta charset="UTF-8">
+  <title>After School Activities</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>After School Activities</h1>
+    <p>Learn with fun and creativity!</p>
+  </header>
 
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+  <main>
+    <div class="lesson-container">
+      <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
+        <div class="icon-box"><i class="fa fa-book"></i></div>
+        <h3>{{ lesson.title }}</h3>
+        <div class="details">
+          <p><strong>Subject:</strong> {{ lesson.subject }}</p>
+          <p><strong>Location:</strong> {{ lesson.location }}</p>
+          <p><strong>Price:</strong> AED {{ lesson.price }}</p>
+          <p><strong>Spaces left:</strong> {{ lesson.spaces }}</p>
+        </div>
+        <button @click="addToCart(lesson)" :disabled="lesson.spaces === 0">
+          {{ lesson.spaces>0 ? 'Add to Cart' : 'Full' }}
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Cart Button -->
+  <button v-if="cart.length > 0" class="fab-cart" @click="goToCart" :title="`Open cart (${cart.length})`">
+    <i class="fa fa-shopping-cart fa-lg"></i>
+    <span class="badge">{{ cart.length }}</span>
+  </button>
+
+  <footer>
+    <p>Created by Daud</p>
+  </footer>
+</div>
+
+<script>
+new Vue({
+  el:'#app',
+  data:{
+    lessons: [],
+    cart: JSON.parse(localStorage.getItem('cart')||'[]')
+  },
+  mounted(){
+    const API_BASE = window.location.hostname === "localhost"
+      ? "http://localhost:3000"
+      : "https://afterschool-app-backend.onrender.com";
+
+    fetch(`${API_BASE}/api/lessons`)
+      .then(res=>res.json())
+      .then(data=>this.lessons=data)
+      .catch(err=>console.error("Failed to fetch lessons:",err));
+  },
+  methods:{
+    addToCart(lesson){
+      if(lesson.spaces>0){
+        lesson.spaces -=1;
+        this.cart.push(lesson);
+        localStorage.setItem('cart', JSON.stringify(this.cart));
+      }
+    },
+    goToCart(){
+      window.location.href = "cart.html";
+    }
+  }
+});
+</script>
+</body>
 </html>

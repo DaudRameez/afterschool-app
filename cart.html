@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="cartApp">
+    <header>
+      <h1>Your Cart</h1>
+    </header>
+
+    <main>
+      <p v-if="cart.length===0" class="empty-text">Your Cart Is Empty.</p>
+
+      <div v-else>
+        <div v-for="item in cart" :key="item.id" class="lesson-card">
+          <h3>{{ item.title }}</h3>
+          <p>Subject: {{ item.subject }}</p>
+          <p>Location: {{ item.location }}</p>
+          <p>Price: AED {{ item.price }}</p>
+          <button @click="removeFromCart(item.id)">Remove</button>
+        </div>
+        <div class="total-box">
+          <h3>Total Price:</h3>
+          <p>AED {{ totalPrice }}</p>
+        </div>
+        <a href="checkout.html"><button class="checkout-btn">Proceed to Checkout</button></a>
+      </div>
+    </main>
+
+    <footer>
+      <p>Created by Daud</p>
+    </footer>
+  </div>
+
+  <script>
+  new Vue({
+    el:'#cartApp',
+    data:{
+      cart: JSON.parse(localStorage.getItem('cart')||'[]')
+    },
+    computed:{
+      totalPrice(){
+        return this.cart.reduce((sum,item)=>sum+Number(item.price),0);
+      }
+    },
+    methods:{
+      removeFromCart(id){
+        this.cart = this.cart.filter(i=>i.id!==id);
+        localStorage.setItem('cart', JSON.stringify(this.cart));
+      }
+    }
+  });
+  </script>
+</body>
+</html>

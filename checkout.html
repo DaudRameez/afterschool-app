@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="checkoutApp">
+    <header>
+      <h1>Checkout</h1>
+    </header>
+
+    <main>
+      <p v-if="cart.length===0" class="empty-text">Your cart is empty.</p>
+
+      <div v-else>
+        <div v-for="item in cart" :key="item.id" class="lesson-card">
+          <h3>{{ item.title }}</h3>
+          <p>Subject: {{ item.subject }}</p>
+          <p>Location: {{ item.location }}</p>
+          <p>Price: AED {{ item.price }}</p>
+        </div>
+
+        <div class="total-box">
+          <h3>Total:</h3>
+          <p>AED {{ totalPrice }}</p>
+        </div>
+
+        <div class="customer-form">
+          <input type="text" v-model="name" placeholder="Full Name"/>
+          <input type="email" v-model="email" placeholder="Email"/>
+          <input type="text" v-model="phone" placeholder="Phone Number"/>
+          <p v-if="error" style="color:red">{{ error }}</p>
+          <button @click="placeOrder">{{ loading?'Placing Order...':'Place Order' }}</button>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>Created by Daud</p>
+    </footer>
+  </div>
+
+  <script>
+  new Vue({
+    el:'#checkoutApp',
+    data:{
+      cart: JSON.parse(localStorage.getItem('cart')||'[]'),
+      name:'',
+      email:'',
+      phone:'',
+      error:'',
+      loading:false
+    },
+    computed:{
+      totalPrice(){ return this.cart.reduce((sum,item)=>sum+Number(item.price),0);}
+    },
+    methods:{
+      async placeOrder(){
+        if(!this.name||!this.email||!this.phone){
+          this.error='Please fill all details';
+          return;
+        }
+        this.loading=true;
+        const API_BASE = window.location.hostname === "localhost"
+          ? "http://localhost:3000"
+          : "https://afterschool-app-backend.onrender.com";
+
+        try{
+          const res = await fetch(`${API_BASE}/api/orders`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              name:this.name,
+              email:this.email,
+              phone:this.phone,
+              items:this.cart
+            })
+          });
+          const data = await res.json();
+          if(res.ok){
+            localStorage.removeItem('cart');
+            window.location.href = `order-success.html?orderId=${data.orderId}`;
+          }else{
+            this.error=data.error || "Failed to place order";
+          }
+        }catch(e){
+          console.error(e);
+          this.error="Failed to place order";
+        }finally{
+          this.loading=false;
+        }
+      }
+    }
+  });
+  </script>
+</body>
+</html>
